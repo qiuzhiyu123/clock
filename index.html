@@ -43,29 +43,78 @@
             pointer-events: none;
         }
         
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 横屏时改为左右布局 */
+        @media screen and (orientation: landscape) {
+            .main-container {
+                flex-direction: row;
+                gap: 40px;
+                align-items: center;
+            }
+        }
+        
+        /* 左侧信息区（日期+天气） */
+        .info-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .date-text {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            font-size: 22px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.55);
+            letter-spacing: 1px;
+        }
+        
+        .weather-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .weather-icon {
+            font-size: 24px;
+            line-height: 1;
+        }
+        
+        .weather-text {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            font-size: 20px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
         .clock-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            position: relative;
-            z-index: 1;
+            gap: 4px;
         }
         
         /* 立体玻璃数字 */
         .digit {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', 
                          'Helvetica Neue', sans-serif;
-            font-size: 130px;
+            font-size: 110px;
             font-weight: 700;
             line-height: 1;
-            letter-spacing: -4px;
+            letter-spacing: -3px;
             
             color: transparent;
             background-clip: text;
             -webkit-background-clip: text;
             
-            /* 彩色渐变主体 */
             background-image: linear-gradient(
                 165deg,
                 #ffe4f0 0%,
@@ -79,7 +128,6 @@
                 #818cf8 100%
             );
             
-            /* 减小泛光 */
             filter: drop-shadow(0 2px 3px rgba(255, 126, 179, 0.45))
                     drop-shadow(0 4px 8px rgba(200, 80, 160, 0.25))
                     drop-shadow(0 8px 16px rgba(150, 70, 190, 0.15));
@@ -99,30 +147,18 @@
         }
         
         @keyframes flipOut {
-            0% { 
-                transform: rotateX(0deg) scale(1); 
-                opacity: 1; 
-            }
-            100% { 
-                transform: rotateX(-90deg) scale(0.9); 
-                opacity: 0; 
-            }
+            0% { transform: rotateX(0deg) scale(1); opacity: 1; }
+            100% { transform: rotateX(-90deg) scale(0.9); opacity: 0; }
         }
         
         @keyframes flipIn {
-            0% { 
-                transform: rotateX(90deg) scale(0.9); 
-                opacity: 0; 
-            }
-            100% { 
-                transform: rotateX(0deg) scale(1); 
-                opacity: 1; 
-            }
+            0% { transform: rotateX(90deg) scale(0.9); opacity: 0; }
+            100% { transform: rotateX(0deg) scale(1); opacity: 1; }
         }
         
         .colon {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-            font-size: 72px;
+            font-size: 60px;
             font-weight: 300;
             color: rgba(255, 255, 255, 0.28);
             margin: 0 2px;
@@ -139,38 +175,68 @@
         /* 横屏适配 */
         @media screen and (orientation: landscape) {
             .digit {
-                font-size: 200px;
-                letter-spacing: -6px;
+                font-size: 170px;
+                letter-spacing: -5px;
             }
             .colon {
-                font-size: 110px;
+                font-size: 95px;
+            }
+            .date-text {
+                font-size: 24px;
+            }
+            .weather-icon {
+                font-size: 28px;
+            }
+            .weather-text {
+                font-size: 22px;
             }
         }
         
         /* 小屏横屏 */
         @media screen and (orientation: landscape) and (max-height: 400px) {
             .digit {
-                font-size: 140px;
-                letter-spacing: -4px;
+                font-size: 120px;
+                letter-spacing: -3px;
             }
             .colon {
-                font-size: 80px;
+                font-size: 68px;
+            }
+            .date-text {
+                font-size: 18px;
+            }
+            .weather-icon {
+                font-size: 22px;
+            }
+            .weather-text {
+                font-size: 18px;
+            }
+            .info-panel {
+                gap: 8px;
             }
         }
         
         /* 竖屏手机 */
         @media screen and (orientation: portrait) and (max-width: 400px) {
             .digit {
-                font-size: 90px;
-                letter-spacing: -3px;
+                font-size: 80px;
+                letter-spacing: -2px;
             }
             .colon {
-                font-size: 56px;
+                font-size: 48px;
+            }
+            .date-text {
+                font-size: 18px;
+            }
+            .weather-icon {
+                font-size: 20px;
+            }
+            .weather-text {
+                font-size: 17px;
             }
         }
         
         /* 防止选中 */
-        .digit, .colon {
+        .digit, .colon, .date-text, .weather-text {
             user-select: none;
             -webkit-user-select: none;
         }
@@ -202,12 +268,24 @@
     <!-- 全屏提示 -->
     <div class="fullscreen-hint" id="hint">横屏已自动全屏</div>
     
-    <div class="clock-container">
-        <span class="digit" id="h1">0</span>
-        <span class="digit" id="h2">0</span>
-        <span class="colon">:</span>
-        <span class="digit" id="m1">0</span>
-        <span class="digit" id="m2">0</span>
+    <div class="main-container">
+        <!-- 左侧/上方 信息面板 -->
+        <div class="info-panel">
+            <div class="date-text" id="date">2026-5-12</div>
+            <div class="weather-row">
+                <span class="weather-icon" id="weatherIcon">🌤️</span>
+                <span class="weather-text" id="weatherText">获取中...</span>
+            </div>
+        </div>
+        
+        <!-- 时钟 -->
+        <div class="clock-container">
+            <span class="digit" id="h1">0</span>
+            <span class="digit" id="h2">0</span>
+            <span class="colon">:</span>
+            <span class="digit" id="m1">0</span>
+            <span class="digit" id="m2">0</span>
+        </div>
     </div>
     
     <script>
@@ -217,7 +295,9 @@
             document.getElementById('m1'),
             document.getElementById('m2')
         ];
-        
+        const dateEl = document.getElementById('date');
+        const weatherIconEl = document.getElementById('weatherIcon');
+        const weatherTextEl = document.getElementById('weatherText');
         const hint = document.getElementById('hint');
         
         // ===== 全屏逻辑 =====
@@ -233,13 +313,9 @@
                     await document.documentElement.msRequestFullscreen();
                 }
                 isFullscreen = true;
-                
-                // 显示提示
                 hint.classList.remove('hidden');
                 setTimeout(() => hint.classList.add('hidden'), 3000);
-            } catch (e) {
-                console.log('全屏请求失败:', e);
-            }
+            } catch (e) {}
         }
         
         function exitFullscreen() {
@@ -253,10 +329,8 @@
             isFullscreen = false;
         }
         
-        // 检测是否横屏
         function checkOrientation() {
             const isLandscape = window.innerWidth > window.innerHeight;
-            
             if (isLandscape && !isFullscreen) {
                 enterFullscreen();
             } else if (!isLandscape && isFullscreen) {
@@ -264,19 +338,15 @@
             }
         }
         
-        // 监听屏幕旋转
         window.addEventListener('resize', checkOrientation);
         window.addEventListener('orientationchange', () => {
-            // orientationchange 会提前触发，延迟一下再检查
             setTimeout(checkOrientation, 300);
         });
         
-        // 页面加载时检查一次（如果已经是横屏）
         window.addEventListener('load', () => {
             setTimeout(checkOrientation, 500);
         });
         
-        // 监听全屏变化
         document.addEventListener('fullscreenchange', () => {
             isFullscreen = !!document.fullscreenElement;
         });
@@ -284,13 +354,91 @@
             isFullscreen = !!document.webkitFullscreenElement;
         });
         
-        // 点击页面也可以触发全屏（备用）
         document.body.addEventListener('click', () => {
             const isLandscape = window.innerWidth > window.innerHeight;
             if (isLandscape && !isFullscreen) {
                 enterFullscreen();
             }
         });
+        
+        // ===== 日期更新 =====
+        function updateDate() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = now.getMonth() + 1;
+            const d = now.getDate();
+            dateEl.textContent = `${y}-${m}-${d}`;
+        }
+        
+        // ===== 天气获取 =====
+        function fetchWeather() {
+            if (!navigator.geolocation) {
+                weatherIconEl.textContent = '🌡️';
+                weatherTextEl.textContent = '无法定位';
+                return;
+            }
+            
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    const lat = pos.coords.latitude.toFixed(2);
+                    const lon = pos.coords.longitude.toFixed(2);
+                    
+                    try {
+                        // 使用 Open-Meteo 免费天气 API
+                        const resp = await fetch(
+                            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`
+                        );
+                        const data = await resp.json();
+                        
+                        const temp = data.current.temperature_2m;
+                        const code = data.current.weather_code;
+                        
+                        weatherTextEl.textContent = `${temp}°C`;
+                        weatherIconEl.textContent = getWeatherEmoji(code);
+                    } catch (e) {
+                        weatherIconEl.textContent = '🌤️';
+                        weatherTextEl.textContent = '获取失败';
+                    }
+                },
+                (err) => {
+                    weatherIconEl.textContent = '📍';
+                    weatherTextEl.textContent = '定位被拒';
+                },
+                { timeout: 8000 }
+            );
+        }
+        
+        function getWeatherEmoji(code) {
+            const map = {
+                0: '☀️',   // 晴
+                1: '🌤️',   // 大部晴
+                2: '⛅',    // 多云
+                3: '☁️',   // 阴天
+                45: '🌫️',  // 雾
+                48: '🌫️',  // 冻雾
+                51: '🌦️',  // 小毛毛雨
+                53: '🌧️',  // 毛毛雨
+                55: '🌧️',  // 大毛毛雨
+                61: '🌧️',  // 小雨
+                63: '🌧️',  // 中雨
+                65: '🌧️',  // 大雨
+                66: '🌧️',  // 冻雨
+                67: '🌨️',  // 冻雨
+                71: '🌨️',  // 小雪
+                73: '❄️',   // 中雪
+                75: '❄️',   // 大雪
+                77: '🌨️',  // 雪粒
+                80: '🌦️',  // 阵雨
+                81: '🌧️',  // 中阵雨
+                82: '⛈️',  // 大阵雨
+                85: '🌨️',  // 阵雪
+                86: '❄️',   // 大阵雪
+                95: '⛈️',   // 雷暴
+                96: '⛈️',   // 雷暴+冰雹
+                99: '⛈️'    // 强雷暴+冰雹
+            };
+            return map[code] || '🌤️';
+        }
         
         // ===== 时钟逻辑 =====
         function updateDigit(el, newVal) {
@@ -300,9 +448,7 @@
                 
                 el.addEventListener('animationend', function handler() {
                     el.removeEventListener('animationend', handler);
-                    
                     el.textContent = newVal;
-                    
                     el.classList.remove('flip-out');
                     el.classList.add('flip-in');
                     
@@ -325,8 +471,19 @@
             updateDigit(digits[3], minutes[1]);
         }
         
+        // 初始化
+        updateDate();
         updateClock();
         setInterval(updateClock, 1000);
+        
+        // 每分钟更新日期和天气
+        setInterval(() => {
+            updateDate();
+        }, 60000);
+        
+        // 获取天气，每30分钟刷新一次
+        fetchWeather();
+        setInterval(fetchWeather, 30 * 60 * 1000);
         
         // 防止屏幕休眠
         if ('wakeLock' in navigator) {
