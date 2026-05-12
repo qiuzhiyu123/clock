@@ -49,6 +49,15 @@
             z-index: 1;
         }
         
+        /* 数字容器 - 用于翻页动画 */
+        .digit-wrap {
+            display: inline-block;
+            overflow: hidden;
+            height: 1em;
+            line-height: 1;
+            perspective: 400px;
+        }
+        
         /* 立体玻璃数字 */
         .digit {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', 
@@ -76,14 +85,16 @@
                 #818cf8 100%
             );
             
-            /* 厚重外发光 - 让数字有立体感 */
-            filter: drop-shadow(0 2px 2px rgba(255, 126, 179, 0.7))
-                    drop-shadow(0 4px 6px rgba(200, 80, 160, 0.5))
-                    drop-shadow(0 8px 16px rgba(150, 70, 190, 0.4))
-                    drop-shadow(0 12px 24px rgba(99, 102, 241, 0.3));
+            /* 减小泛光 */
+            filter: drop-shadow(0 2px 3px rgba(255, 126, 179, 0.45))
+                    drop-shadow(0 4px 8px rgba(200, 80, 160, 0.25))
+                    drop-shadow(0 8px 16px rgba(150, 70, 190, 0.15));
+            
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
         }
         
-        /* 高光层 - 左上角反光，增加立体感 */
+        /* 高光层 */
         .digit::after {
             content: attr(data-char);
             position: absolute;
@@ -106,7 +117,7 @@
             pointer-events: none;
         }
         
-        /* 底部暗部 - 增加厚度感 */
+        /* 底部暗部 */
         .digit::before {
             content: attr(data-char);
             position: absolute;
@@ -129,6 +140,37 @@
             pointer-events: none;
         }
         
+        /* 翻页动画 */
+        .digit.flip-out {
+            animation: flipOut 0.35s ease-in forwards;
+        }
+        
+        .digit.flip-in {
+            animation: flipIn 0.35s ease-out forwards;
+        }
+        
+        @keyframes flipOut {
+            0% { 
+                transform: rotateX(0deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: rotateX(-90deg); 
+                opacity: 0; 
+            }
+        }
+        
+        @keyframes flipIn {
+            0% { 
+                transform: rotateX(90deg); 
+                opacity: 0; 
+            }
+            100% { 
+                transform: rotateX(0deg); 
+                opacity: 1; 
+            }
+        }
+        
         .colon {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
             font-size: 72px;
@@ -136,7 +178,13 @@
             color: rgba(255, 255, 255, 0.28);
             margin: 0 2px;
             line-height: 1;
+            animation: blink 2s ease-in-out infinite;
             filter: blur(0.5px);
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.15; }
         }
         
         /* 横屏适配 */
@@ -184,42 +232,57 @@
     <div class="bg-glow"></div>
     
     <div class="clock-container">
-        <span class="digit" id="h1" data-char="0">0</span>
-        <span class="digit" id="h2" data-char="0">0</span>
+        <div class="digit-wrap"><span class="digit" id="h1" data-char="0">0</span></div>
+        <div class="digit-wrap"><span class="digit" id="h2" data-char="0">0</span></div>
         <span class="colon">:</span>
-        <span class="digit" id="m1" data-char="0">0</span>
-        <span class="digit" id="m2" data-char="0">0</span>
+        <div class="digit-wrap"><span class="digit" id="m1" data-char="0">0</span></div>
+        <div class="digit-wrap"><span class="digit" id="m2" data-char="0">0</span></div>
     </div>
     
     <script>
-        const h1 = document.getElementById('h1');
-        const h2 = document.getElementById('h2');
-        const m1 = document.getElementById('m1');
-        const m2 = document.getElementById('m2');
+        const digits = [
+            document.getElementById('h1'),
+            document.getElementById('h2'),
+            document.getElementById('m1'),
+            document.getElementById('m2')
+        ];
+        
+        function updateDigit(el, newVal) {
+            if (el.textContent !== newVal) {
+                // 翻出动画
+                el.classList.remove('flip-in');
+                el.classList.add('flip-out');
+                
+                const oldVal = el.textContent;
+                
+                el.addEventListener('animationend', function handler() {
+                    el.removeEventListener('animationend', handler);
+                    
+                    // 更新值
+                    el.textContent = newVal;
+                    el.setAttribute('data-char', newVal);
+                    
+                    // 翻入动画
+                    el.classList.remove('flip-out');
+                    el.classList.add('flip-in');
+                    
+                    el.addEventListener('animationend', function handler2() {
+                        el.removeEventListener('animationend', handler2);
+                        el.classList.remove('flip-in');
+                    });
+                });
+            }
+        }
         
         function updateClock() {
             const now = new Date();
-            
-            // 时间 - 24小时制
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             
-            if (h1.textContent !== hours[0]) {
-                h1.textContent = hours[0];
-                h1.setAttribute('data-char', hours[0]);
-            }
-            if (h2.textContent !== hours[1]) {
-                h2.textContent = hours[1];
-                h2.setAttribute('data-char', hours[1]);
-            }
-            if (m1.textContent !== minutes[0]) {
-                m1.textContent = minutes[0];
-                m1.setAttribute('data-char', minutes[0]);
-            }
-            if (m2.textContent !== minutes[1]) {
-                m2.textContent = minutes[1];
-                m2.setAttribute('data-char', minutes[1]);
-            }
+            updateDigit(digits[0], hours[0]);
+            updateDigit(digits[1], hours[1]);
+            updateDigit(digits[2], minutes[0]);
+            updateDigit(digits[3], minutes[1]);
         }
         
         // 立即更新
