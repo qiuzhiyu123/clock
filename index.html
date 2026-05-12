@@ -26,27 +26,19 @@
             position: relative;
         }
         
-        /* 背景渐变光晕 */
+        /* 背景光晕 */
         .bg-glow {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 120%;
-            height: 120%;
+            width: 140%;
+            height: 140%;
             background: 
-                radial-gradient(ellipse at 30% 40%, rgba(255, 105, 180, 0.25) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 60%, rgba(138, 43, 226, 0.2) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 80%, rgba(75, 0, 130, 0.15) 0%, transparent 45%);
-            animation: bgShift 10s ease-in-out infinite alternate;
+                radial-gradient(ellipse at 25% 35%, rgba(255, 120, 180, 0.3) 0%, transparent 45%),
+                radial-gradient(ellipse at 75% 65%, rgba(130, 80, 220, 0.25) 0%, transparent 45%),
+                radial-gradient(ellipse at 60% 85%, rgba(90, 40, 160, 0.2) 0%, transparent 40%);
             pointer-events: none;
-        }
-        
-        @keyframes bgShift {
-            0% { transform: translate(-50%, -50%) rotate(0deg); opacity: 1; }
-            33% { transform: translate(-48%, -52%) rotate(1deg); }
-            66% { transform: translate(-52%, -48%) rotate(-1deg); }
-            100% { transform: translate(-50%, -50%) rotate(0deg); opacity: 0.9; }
         }
         
         .clock-container {
@@ -58,12 +50,7 @@
             z-index: 1;
         }
         
-        .digit-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-        
-        /* 液态玻璃效果 - 数字本体 */
+        /* 液态玻璃数字 */
         .digit {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', 
                          'Helvetica Neue', sans-serif;
@@ -72,26 +59,54 @@
             line-height: 1;
             letter-spacing: -4px;
             
-            /* 玻璃质感：多层渐变模拟折射 */
-            background: linear-gradient(
-                165deg,
-                rgba(255, 200, 230, 0.95) 0%,
-                rgba(255, 126, 179, 0.9) 15%,
-                rgba(224, 86, 160, 0.85) 35%,
-                rgba(178, 79, 179, 0.9) 55%,
-                rgba(123, 104, 238, 0.85) 75%,
-                rgba(99, 102, 241, 0.95) 100%
-            );
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            
-            /* 高光层 - 模拟玻璃反光 */
             position: relative;
+            color: transparent;
+            background-clip: text;
+            -webkit-background-clip: text;
+            
+            /* 玻璃主体渐变 - 模拟玻璃折射的彩色 */
+            background-image: linear-gradient(
+                165deg,
+                #ffd6e8 0%,
+                #ffb3d4 12%,
+                #ff7eb3 28%,
+                #e056a0 44%,
+                #b066cc 62%,
+                #8855dd 78%,
+                #6366f1 92%,
+                #818cf8 100%
+            );
+            
+            /* 玻璃光泽 - 内部高光 */
+            -webkit-mask-image: linear-gradient(
+                170deg,
+                rgba(255,255,255,1) 0%,
+                rgba(255,255,255,0.95) 20%,
+                rgba(255,255,255,0.9) 40%,
+                rgba(255,255,255,0.95) 55%,
+                rgba(255,255,255,0.92) 70%,
+                rgba(255,255,255,0.98) 85%,
+                rgba(255,255,255,1) 100%
+            );
+            mask-image: linear-gradient(
+                170deg,
+                rgba(255,255,255,1) 0%,
+                rgba(255,255,255,0.95) 20%,
+                rgba(255,255,255,0.9) 40%,
+                rgba(255,255,255,0.95) 55%,
+                rgba(255,255,255,0.92) 70%,
+                rgba(255,255,255,0.98) 85%,
+                rgba(255,255,255,1) 100%
+            );
+            
+            /* 外发光 - 玻璃边缘光 */
+            filter: drop-shadow(0 2px 16px rgba(255, 126, 179, 0.5))
+                    drop-shadow(0 4px 32px rgba(178, 79, 179, 0.35))
+                    drop-shadow(0 8px 48px rgba(99, 102, 241, 0.25));
         }
         
-        /* 玻璃高光叠加层 */
-        .digit::before {
+        /* 玻璃高光叠加层 - 左上角反光 */
+        .digit::after {
             content: attr(data-char);
             position: absolute;
             left: 0;
@@ -100,70 +115,37 @@
             font-weight: inherit;
             line-height: inherit;
             letter-spacing: inherit;
-            background: linear-gradient(
-                135deg,
-                rgba(255, 255, 255, 0.7) 0%,
-                rgba(255, 255, 255, 0.15) 30%,
-                rgba(255, 255, 255, 0) 50%,
-                rgba(255, 255, 255, 0.08) 70%,
-                rgba(255, 255, 255, 0.3) 100%
-            );
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: transparent;
             background-clip: text;
+            -webkit-background-clip: text;
+            background-image: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.75) 0%,
+                rgba(255, 255, 255, 0.35) 18%,
+                rgba(255, 255, 255, 0.08) 38%,
+                rgba(255, 255, 255, 0) 52%,
+                rgba(255, 255, 255, 0) 65%,
+                rgba(255, 255, 255, 0.15) 82%,
+                rgba(255, 255, 255, 0.4) 100%
+            );
             pointer-events: none;
-        }
-        
-        /* 液态微动效果 */
-        .digit {
-            animation: glassFlow 5s ease-in-out infinite;
-            transform-origin: bottom center;
-        }
-        
-        .digit:nth-child(1) { animation-delay: 0s; }
-        .digit:nth-child(2) { animation-delay: 0.2s; }
-        .digit:nth-child(4) { animation-delay: 0.4s; }
-        .digit:nth-child(5) { animation-delay: 0.6s; }
-        
-        @keyframes glassFlow {
-            0%, 100% { 
-                filter: drop-shadow(0 0 20px rgba(255, 105, 180, 0.3)) drop-shadow(0 0 40px rgba(138, 43, 226, 0.2));
-                transform: scaleY(1) scaleX(1);
-            }
-            25% { 
-                filter: drop-shadow(0 0 25px rgba(255, 126, 179, 0.35)) drop-shadow(0 0 45px rgba(178, 79, 179, 0.22));
-                transform: scaleY(1.02) scaleX(0.99);
-            }
-            50% { 
-                filter: drop-shadow(0 0 18px rgba(178, 79, 179, 0.28)) drop-shadow(0 0 38px rgba(99, 102, 241, 0.18));
-                transform: scaleY(0.98) scaleX(1.01);
-            }
-            75% { 
-                filter: drop-shadow(0 0 22px rgba(123, 104, 238, 0.32)) drop-shadow(0 0 42px rgba(255, 105, 180, 0.2));
-                transform: scaleY(1.01) scaleX(0.995);
-            }
         }
         
         .colon {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-            font-size: 75px;
+            font-size: 72px;
             font-weight: 300;
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.28);
             margin: 0 2px;
             line-height: 1;
-            animation: blink 2s ease-in-out infinite, colonFloat 5s ease-in-out infinite;
+            animation: blink 2s ease-in-out infinite;
             align-self: center;
-            filter: blur(0.3px);
+            filter: blur(0.5px);
         }
         
         @keyframes blink {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.15; }
-        }
-        
-        @keyframes colonFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
         }
         
         /* 横屏适配 */
@@ -173,7 +155,7 @@
                 letter-spacing: -6px;
             }
             .colon {
-                font-size: 115px;
+                font-size: 110px;
             }
         }
         
@@ -184,7 +166,7 @@
                 letter-spacing: -4px;
             }
             .colon {
-                font-size: 82px;
+                font-size: 80px;
             }
         }
         
@@ -195,7 +177,7 @@
                 letter-spacing: -3px;
             }
             .colon {
-                font-size: 58px;
+                font-size: 56px;
             }
         }
         
@@ -231,7 +213,6 @@
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             
-            // 更新文字和高光层
             if (h1.textContent !== hours[0]) {
                 h1.textContent = hours[0];
                 h1.setAttribute('data-char', hours[0]);
