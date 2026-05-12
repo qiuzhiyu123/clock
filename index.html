@@ -29,36 +29,77 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
+        }
+        
+        .digit-wrapper {
+            position: relative;
+            display: inline-block;
         }
         
         .digit {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', 
-                         'Helvetica Neue', 'Arial', sans-serif;
+                         'Helvetica Neue', sans-serif;
             font-size: 120px;
-            font-weight: 500;
+            font-weight: 700;
             line-height: 1;
+            letter-spacing: -4px;
+            position: relative;
             background: linear-gradient(180deg, 
-                #ffb8d0 0%, 
-                #ff8fab 25%,
-                #ff6b9d 50%,
-                #c77dff 75%,
-                #9d4edd 100%
+                #ffb6d5 0%, 
+                #ff7eb3 20%,
+                #e056a0 40%,
+                #b24fb3 60%,
+                #7b68ee 80%,
+                #6366f1 100%
             );
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: -2px;
+            
+            /* 液体效果 */
+            filter: url(#liquid);
+            animation: liquidPulse 3s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+        
+        /* 每个数字稍微不同的动画延迟，产生波浪感 */
+        .digit:nth-child(1) { animation-delay: 0s; }
+        .digit:nth-child(2) { animation-delay: 0.15s; }
+        .digit:nth-child(4) { animation-delay: 0.3s; }
+        .digit:nth-child(5) { animation-delay: 0.45s; }
+        
+        @keyframes liquidPulse {
+            0% { 
+                transform: scaleY(1) scaleX(1); 
+                filter: blur(0px);
+            }
+            25% { 
+                transform: scaleY(1.03) scaleX(0.98); 
+                filter: blur(0.1px);
+            }
+            50% { 
+                transform: scaleY(0.97) scaleX(1.02); 
+                filter: blur(0px);
+            }
+            75% { 
+                transform: scaleY(1.01) scaleX(0.99); 
+                filter: blur(0.15px);
+            }
+            100% { 
+                transform: scaleY(1) scaleX(1); 
+                filter: blur(0px);
+            }
         }
         
         .colon {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-            font-size: 80px;
+            font-size: 70px;
             font-weight: 300;
-            color: rgba(255, 255, 255, 0.4);
-            margin: 0 4px;
+            color: rgba(255, 255, 255, 0.35);
+            margin: 0 2px;
             line-height: 1;
-            animation: blink 2s ease-in-out infinite;
+            animation: blink 2s ease-in-out infinite, colonBounce 3s ease-in-out infinite;
             align-self: center;
         }
         
@@ -67,22 +108,27 @@
             50% { opacity: 0.2; }
         }
         
+        @keyframes colonBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        
         /* 横屏适配 */
         @media screen and (orientation: landscape) {
             .digit {
                 font-size: 180px;
-                letter-spacing: -4px;
+                letter-spacing: -6px;
             }
             .colon {
-                font-size: 120px;
+                font-size: 110px;
             }
         }
         
         /* 小屏横屏 */
         @media screen and (orientation: landscape) and (max-height: 400px) {
             .digit {
-                font-size: 120px;
-                letter-spacing: -2px;
+                font-size: 130px;
+                letter-spacing: -4px;
             }
             .colon {
                 font-size: 80px;
@@ -92,7 +138,8 @@
         /* 竖屏手机 */
         @media screen and (orientation: portrait) and (max-width: 400px) {
             .digit {
-                font-size: 80px;
+                font-size: 85px;
+                letter-spacing: -3px;
             }
             .colon {
                 font-size: 55px;
@@ -107,6 +154,16 @@
     </style>
 </head>
 <body>
+    <!-- SVG 滤镜用于液体效果 -->
+    <svg style="position:absolute;width:0;height:0;">
+        <defs>
+            <filter id="liquid">
+                <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" seed="1"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+        </defs>
+    </svg>
+    
     <div class="clock-container">
         <span class="digit" id="h1">0</span>
         <span class="digit" id="h2">0</span>
