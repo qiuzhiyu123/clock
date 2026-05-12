@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>时钟</title>
     <style>
         * {
@@ -171,11 +174,33 @@
             user-select: none;
             -webkit-user-select: none;
         }
+
+        /* 全屏提示 */
+        .fullscreen-hint {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            font-family: -apple-system, sans-serif;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 2s ease;
+            z-index: 10;
+        }
+        
+        .fullscreen-hint.hidden {
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
     <!-- 背景光晕 -->
     <div class="bg-glow"></div>
+    
+    <!-- 全屏提示 -->
+    <div class="fullscreen-hint" id="hint">横屏已自动全屏</div>
     
     <div class="clock-container">
         <span class="digit" id="h1">0</span>
@@ -193,19 +218,91 @@
             document.getElementById('m2')
         ];
         
+        const hint = document.getElementById('hint');
+        
+        // ===== 全屏逻辑 =====
+        let isFullscreen = false;
+        
+        async function enterFullscreen() {
+            try {
+                if (document.documentElement.requestFullscreen) {
+                    await document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    await document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    await document.documentElement.msRequestFullscreen();
+                }
+                isFullscreen = true;
+                
+                // 显示提示
+                hint.classList.remove('hidden');
+                setTimeout(() => hint.classList.add('hidden'), 3000);
+            } catch (e) {
+                console.log('全屏请求失败:', e);
+            }
+        }
+        
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+            isFullscreen = false;
+        }
+        
+        // 检测是否横屏
+        function checkOrientation() {
+            const isLandscape = window.innerWidth > window.innerHeight;
+            
+            if (isLandscape && !isFullscreen) {
+                enterFullscreen();
+            } else if (!isLandscape && isFullscreen) {
+                exitFullscreen();
+            }
+        }
+        
+        // 监听屏幕旋转
+        window.addEventListener('resize', checkOrientation);
+        window.addEventListener('orientationchange', () => {
+            // orientationchange 会提前触发，延迟一下再检查
+            setTimeout(checkOrientation, 300);
+        });
+        
+        // 页面加载时检查一次（如果已经是横屏）
+        window.addEventListener('load', () => {
+            setTimeout(checkOrientation, 500);
+        });
+        
+        // 监听全屏变化
+        document.addEventListener('fullscreenchange', () => {
+            isFullscreen = !!document.fullscreenElement;
+        });
+        document.addEventListener('webkitfullscreenchange', () => {
+            isFullscreen = !!document.webkitFullscreenElement;
+        });
+        
+        // 点击页面也可以触发全屏（备用）
+        document.body.addEventListener('click', () => {
+            const isLandscape = window.innerWidth > window.innerHeight;
+            if (isLandscape && !isFullscreen) {
+                enterFullscreen();
+            }
+        });
+        
+        // ===== 时钟逻辑 =====
         function updateDigit(el, newVal) {
             if (el.textContent !== newVal) {
-                // 翻出动画
                 el.classList.remove('flip-in');
                 el.classList.add('flip-out');
                 
                 el.addEventListener('animationend', function handler() {
                     el.removeEventListener('animationend', handler);
                     
-                    // 更新值
                     el.textContent = newVal;
                     
-                    // 翻入动画
                     el.classList.remove('flip-out');
                     el.classList.add('flip-in');
                     
@@ -228,27 +325,21 @@
             updateDigit(digits[3], minutes[1]);
         }
         
-        // 立即更新
         updateClock();
-        
-        // 每秒更新
         setInterval(updateClock, 1000);
         
-        // 防止屏幕休眠（如果支持）
+        // 防止屏幕休眠
         if ('wakeLock' in navigator) {
             let wakeLock = null;
             
             async function requestWakeLock() {
                 try {
                     wakeLock = await navigator.wakeLock.request('screen');
-                } catch (err) {
-                    console.log('无法保持屏幕常亮');
-                }
+                } catch (err) {}
             }
             
             requestWakeLock();
             
-            // 页面可见时重新请求
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'visible') {
                     requestWakeLock();
