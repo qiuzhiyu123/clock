@@ -36,8 +36,7 @@
             height: 140%;
             background: 
                 radial-gradient(ellipse at 25% 35%, rgba(255, 120, 180, 0.3) 0%, transparent 45%),
-                radial-gradient(ellipse at 75% 65%, rgba(130, 80, 220, 0.25) 0%, transparent 45%),
-                radial-gradient(ellipse at 60% 85%, rgba(90, 40, 160, 0.2) 0%, transparent 40%);
+                radial-gradient(ellipse at 75% 65%, rgba(130, 80, 220, 0.25) 0%, transparent 45%);
             pointer-events: none;
         }
         
@@ -50,7 +49,7 @@
             z-index: 1;
         }
         
-        /* 液态玻璃数字 */
+        /* 立体玻璃数字 */
         .digit {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', 
                          'Helvetica Neue', sans-serif;
@@ -59,53 +58,32 @@
             line-height: 1;
             letter-spacing: -4px;
             
-            position: relative;
             color: transparent;
             background-clip: text;
             -webkit-background-clip: text;
             
-            /* 玻璃主体渐变 - 模拟玻璃折射的彩色 */
+            /* 彩色渐变主体 */
             background-image: linear-gradient(
                 165deg,
-                #ffd6e8 0%,
-                #ffb3d4 12%,
-                #ff7eb3 28%,
-                #e056a0 44%,
-                #b066cc 62%,
-                #8855dd 78%,
-                #6366f1 92%,
+                #ffe4f0 0%,
+                #ffc8e0 10%,
+                #ff9cc5 22%,
+                #ff7eb3 36%,
+                #dd66b3 52%,
+                #b066cc 68%,
+                #8855dd 82%,
+                #6366f1 94%,
                 #818cf8 100%
             );
             
-            /* 玻璃光泽 - 内部高光 */
-            -webkit-mask-image: linear-gradient(
-                170deg,
-                rgba(255,255,255,1) 0%,
-                rgba(255,255,255,0.95) 20%,
-                rgba(255,255,255,0.9) 40%,
-                rgba(255,255,255,0.95) 55%,
-                rgba(255,255,255,0.92) 70%,
-                rgba(255,255,255,0.98) 85%,
-                rgba(255,255,255,1) 100%
-            );
-            mask-image: linear-gradient(
-                170deg,
-                rgba(255,255,255,1) 0%,
-                rgba(255,255,255,0.95) 20%,
-                rgba(255,255,255,0.9) 40%,
-                rgba(255,255,255,0.95) 55%,
-                rgba(255,255,255,0.92) 70%,
-                rgba(255,255,255,0.98) 85%,
-                rgba(255,255,255,1) 100%
-            );
-            
-            /* 外发光 - 玻璃边缘光 */
-            filter: drop-shadow(0 2px 16px rgba(255, 126, 179, 0.5))
-                    drop-shadow(0 4px 32px rgba(178, 79, 179, 0.35))
-                    drop-shadow(0 8px 48px rgba(99, 102, 241, 0.25));
+            /* 厚重外发光 - 让数字有立体感 */
+            filter: drop-shadow(0 2px 2px rgba(255, 126, 179, 0.7))
+                    drop-shadow(0 4px 6px rgba(200, 80, 160, 0.5))
+                    drop-shadow(0 8px 16px rgba(150, 70, 190, 0.4))
+                    drop-shadow(0 12px 24px rgba(99, 102, 241, 0.3));
         }
         
-        /* 玻璃高光叠加层 - 左上角反光 */
+        /* 高光层 - 左上角反光，增加立体感 */
         .digit::after {
             content: attr(data-char);
             position: absolute;
@@ -120,13 +98,33 @@
             -webkit-background-clip: text;
             background-image: linear-gradient(
                 135deg,
-                rgba(255, 255, 255, 0.75) 0%,
-                rgba(255, 255, 255, 0.35) 18%,
-                rgba(255, 255, 255, 0.08) 38%,
-                rgba(255, 255, 255, 0) 52%,
-                rgba(255, 255, 255, 0) 65%,
-                rgba(255, 255, 255, 0.15) 82%,
-                rgba(255, 255, 255, 0.4) 100%
+                rgba(255, 255, 255, 0.85) 0%,
+                rgba(255, 255, 255, 0.45) 15%,
+                rgba(255, 255, 255, 0.12) 32%,
+                rgba(255, 255, 255, 0) 48%
+            );
+            pointer-events: none;
+        }
+        
+        /* 底部暗部 - 增加厚度感 */
+        .digit::before {
+            content: attr(data-char);
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+            letter-spacing: inherit;
+            color: transparent;
+            background-clip: text;
+            -webkit-background-clip: text;
+            background-image: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0) 55%,
+                rgba(60, 20, 80, 0.25) 75%,
+                rgba(40, 10, 60, 0.4) 90%,
+                rgba(30, 5, 50, 0.5) 100%
             );
             pointer-events: none;
         }
@@ -138,14 +136,7 @@
             color: rgba(255, 255, 255, 0.28);
             margin: 0 2px;
             line-height: 1;
-            animation: blink 2s ease-in-out infinite;
-            align-self: center;
             filter: blur(0.5px);
-        }
-        
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.15; }
         }
         
         /* 横屏适配 */
